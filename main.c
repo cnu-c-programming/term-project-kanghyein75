@@ -19,8 +19,8 @@
 #include <string.h>
 
 /* TODO: Add your own header includes here */
-/* #include "student.h"  */
-/* #include "file_io.h"  */
+#include "student.h" 
+#include "file_io.h" 
 /* #include "command.h"  */
 
 /* ---------------------------------------------------------------
@@ -68,6 +68,9 @@ int main(int argc, char *argv[]) {
      */
     (void)argc;
     (void)argv;
+
+    Student *head = NULL;
+    loadStudents(&head, csv_path);
 
 #ifdef ADMIN_MODE
     /* Admin shell: supports add, delete, update, save, load, sort, list, find, help, exit */

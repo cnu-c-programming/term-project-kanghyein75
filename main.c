@@ -71,6 +71,7 @@ int main(int argc, char *argv[]) {
 
     Student *head = NULL;
     loadStudents(&head, csv_path);
+    printStudents(head);
 
 #ifdef ADMIN_MODE
     /* Admin shell: supports add, delete, update, save, load, sort, list, find, help, exit */

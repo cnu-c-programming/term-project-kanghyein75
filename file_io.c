@@ -16,12 +16,16 @@ void loadStudents(Student **head, const char *filename) {
     }
 
     while (fgets(line, sizeof(line), fp) != NULL) {
-        printf("%s", line);
+        int id, score;
+        char name[32];
+
+        if (sscanf(line, "%d, %31[^,], %d", &id, name, &score) == 3) {
+            addStudent(head, id, name, score);
+        }
     }
 
     fclose(fp);
     
-    (void)head; 
 }
 
 void saveStudents(Student *head, const char *filename) {

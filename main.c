@@ -90,5 +90,7 @@ int main(int argc, char *argv[]) {
 #error "Define either -DADMIN_MODE or -DCLIENT_MODE when compiling."
 #endif
 
+    freeStudents(&head);
+
     return 0;
 }

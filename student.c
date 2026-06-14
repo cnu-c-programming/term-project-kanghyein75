@@ -37,5 +37,14 @@ void printStudents(Student *head) {
 }
 
 void freeStudents(Student **head) {
-    (void)head;
+    Student *current = *head;
+    Student *nextN; 
+
+    while (current != NULL) {
+        nextN = current->next; 
+        free(current);            
+        current = nextN;      
+    }
+
+    *head = NULL;
 }

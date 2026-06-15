@@ -19,9 +19,59 @@
 #include <string.h>
 
 /* TODO: Add your own header includes here */
-#include "student.h" 
-#include "file_io.h" 
+#include "student.h"  
+#include "file_io.h"  
 /* #include "command.h"  */
+
+typedef enum {
+    SHELL_OK = 0,
+    SHELL_EXIT,
+    SHELL_ERR_UNKNOWN_COMMAND,
+    SHELL_ERR_INVALID_ARGUMENT,
+    SHELL_ERR_MISSING_ARGUMENT,
+    SHELL_ERR_FILE_OPEN,
+    SHELL_ERR_FILE_WRITE,
+    SHELL_ERR_STUDENT_NOT_FOUND,
+    SHELL_ERR_DUPLICATE_STUDENT,
+    SHELL_ERR_INVALID_SCORE
+} ShellResult;
+
+typedef ShellResult (*CommandHandler)(char* args, Student** head);
+
+typedef struct {
+    const char* name;
+    CommandHandler handler;
+    const char* usage;
+    const char* description;
+} Command;
+
+#ifdef ADMIN_MODE
+Command commands[] = {
+    {"save",    NULL, "save",                  "Save students to CSV"},
+    {"reload",  NULL, "reload",                "Reload students from CSV"},
+    {"add",     NULL, "add <id> <name> <score>","Add a student"},
+    {"delete",  NULL, "delete <id>",           "Delete a student"},
+    {"update",  NULL, "update <id> <score>",   "Update student score"},
+    {"find",    NULL, "find <id>",             "Find student"},
+    {"list",    NULL, "list",                  "List students"},
+    {"stats",   NULL, "stats",                 "Show statistics"},
+    {"help",    NULL, "help",                  "Show help"},
+    {"clear",   NULL, "clear",                 "Clear screen"},
+    {"exit",    NULL, "exit",                  "Exit shell"}
+};
+#endif
+
+#ifdef CLIENT_MODE
+Command commands[] = {
+    {"reload",  NULL, "reload",                "Reload students from CSV"},
+    {"find",    NULL, "find <id>",             "Find student"},
+    {"list",    NULL, "list",                  "List students"},
+    {"stats",   NULL, "stats",                 "Show statistics"},
+    {"help",    NULL, "help",                  "Show help"},
+    {"clear",   NULL, "clear",                 "Clear screen"},
+    {"exit",    NULL, "exit",                  "Exit shell"}
+};
+#endif
 
 /* ---------------------------------------------------------------
  * TODO: Implement the interactive shell loop.
@@ -31,8 +81,46 @@
  *   - Loop until the user types "exit" or EOF.
  * --------------------------------------------------------------- */
 void run_shell(const char *csv_path) {
-    /* TODO */
-    (void)csv_path;
+    char line[500];
+
+#ifdef ADMIN_MODE
+    const char *user = "admin> ";
+#else
+    const char *user = "client> ";
+#endif
+
+    while (1) {
+        printf("%s", user); 
+        fflush(stdout);     
+
+        if (fgets(line, sizeof(line), stdin) == NULL) {
+            break;
+        }
+
+        line[strcspn(line, "\n")] = '\0';
+
+        char *cmd = strtok(line, " ");
+        if (cmd == NULL) continue;
+        
+        if (strcmp(cmd, "exit") == 0) {
+            printf("end\n");
+            break;
+        }
+
+        int found = 0;
+        int num = sizeof(commands) / sizeof(commands[0]);
+        for (int i = 0; i < num; i++) {
+            if (strcmp(cmd, commands[i].name) == 0) {
+                printf("true\n");
+                found = 1;
+                break;
+            }
+        }
+
+        if (!found) {
+            printf("false\n");
+        }
+    }
 }
 
 /* ---------------------------------------------------------------

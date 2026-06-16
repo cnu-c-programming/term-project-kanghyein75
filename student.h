@@ -9,7 +9,6 @@ typedef struct Student {
 } Student;
 
 void addStudent(Student **head, int id, const char *name, int score);
-void printStudents(Student *head);
 void freeStudents(Student **head);
 
 #endif

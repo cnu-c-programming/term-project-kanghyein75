@@ -28,7 +28,10 @@ typedef struct {
 extern Command commands[];
 extern int num;
 
-ShellResult handle_list(char* args, Student** head);
+ShellResult handle_add(char* args, Student** head);
+ShellResult handle_delete(char* args, Student** head);
+ShellResult handle_update(char* args, Student** head);
 ShellResult handle_find(char* args, Student** head);
+ShellResult handle_list(char* args, Student** head);
 
 #endif

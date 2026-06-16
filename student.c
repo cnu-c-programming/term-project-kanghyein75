@@ -27,15 +27,6 @@ void addStudent(Student **head, int id, const char *name, int score) {
     }
 }
 
-void printStudents(Student *head) {
-    Student *current = head;
-
-    while (current != NULL) {
-        printf("id: %d, name: %s, score: %d\n", current->id, current->name, current->score);
-        current = current->next;
-    }
-}
-
 void freeStudents(Student **head) {
     Student *current = *head;
     Student *nextN; 

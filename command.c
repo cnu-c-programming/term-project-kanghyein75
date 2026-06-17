@@ -3,6 +3,42 @@
 #include <string.h>
 #include "command.h"
 #include "student.h"
+#include "file_io.h"
+
+ShellResult handle_save(char* args, Student** head) {
+    (void)args;
+
+    saveStudents(*head, "students.csv");
+
+    int count = 0;
+    Student *current = *head;
+    while (current != NULL) {
+        count++;
+        current = current->next;
+    }
+
+    printf("Saved %d students to students.csv.\n", count);
+
+    return SHELL_OK;
+}
+
+ShellResult handle_reload(char* args, Student** head) {
+    (void)args;
+
+    freeStudents(head); 
+    loadStudents(head, "student.csv");
+
+    int count = 0;
+    Student *current = *head;
+    while (current != NULL) {
+        count++;
+        current = current->next;
+    }
+
+    printf("Reloaded %d students from students.csv.\n", count);
+
+    return SHELL_OK;
+}
 
 ShellResult handle_add(char* args, Student** head) {
     if (args == NULL || *args == '\0') {
@@ -159,6 +195,15 @@ ShellResult handle_list(char* args, Student** head) {
     return SHELL_OK;
 }
 
+ShellResult handle_exit(char* args, Student** head) {
+    (void)args; 
+    (void)head; 
+
+    printf("Goodbye.\n"); 
+    
+    return SHELL_EXIT; 
+}
+
 
 #ifdef ADMIN_MODE
 Command commands[] = {
@@ -172,7 +217,7 @@ Command commands[] = {
     {"stats",   NULL, "stats",                 "Show statistics"},
     {"help",    NULL, "help",                  "Show help"},
     {"clear",   NULL, "clear",                 "Clear screen"},
-    {"exit",    NULL, "exit",                  "Exit shell"}
+    {"exit",    handle_exit, "exit",                  "Exit shell"}
 };
 #endif
 
@@ -184,7 +229,7 @@ Command commands[] = {
     {"stats",   NULL, "stats",                 "Show statistics"},
     {"help",    NULL, "help",                  "Show help"},
     {"clear",   NULL, "clear",                 "Clear screen"},
-    {"exit",    NULL, "exit",                  "Exit shell"}
+    {"exit",    handle_exit, "exit",                  "Exit shell"}
 };
 #endif
 

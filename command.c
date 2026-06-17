@@ -4,26 +4,121 @@
 #include "command.h"
 #include "student.h"
 
-ShellResult handle_list(char* args, Student** head) {
-    (void)args; 
-    if (*head == NULL) {
-        printf("No students found.\n");
-        return SHELL_OK;
+ShellResult handle_add(char* args, Student** head) {
+    if (args == NULL || *args == '\0') {
+        printf("Error: missing argument.\n");
+        return SHELL_ERR_MISSING_ARGUMENT;
     }
 
-    printf("ID   Name      Score\n");
+    char *strId = strtok(args, " ");
+    char *name = strtok(NULL, " ");
+    char *strScore = strtok(NULL, " ");
+
+    if (strId == NULL || name == NULL || strScore == NULL) {
+        printf("Error: missing argument.\n");
+        return SHELL_ERR_MISSING_ARGUMENT;
+    }
+
+    if (strspn(strId, "0123456789") != strlen(strId) || strspn(strScore, "0123456789") != strlen(strScore)) {
+        printf("Error: invalid argument.\n");
+        return SHELL_ERR_INVALID_ARGUMENT;
+    }
+
+    int id = atoi(strId);
+    int score = atoi(strScore);
+
+    if (id <= 0 || score < 0 || score > 100) {
+        printf("Error: invalid argument.\n");
+        return SHELL_ERR_INVALID_ARGUMENT;
+    }
+
     Student *current = *head;
     while (current != NULL) {
-        printf("%-5d%-10s%d\n", current->id, current->name, current->score);
+        if (current->id == id) {
+            printf("Error: duplicate ID.\n"); 
+            return SHELL_ERR_DUPLICATE_STUDENT;
+        }
         current = current->next;
     }
+
+    addStudent(head, id, name, score);
+    
+    printf("Student added.\n");
+
     return SHELL_OK;
+}
+
+ShellResult handle_delete(char* args, Student** head) {
+    if (args == NULL || *args == '\0') {
+        printf("Error: missing argument.\n");
+        return SHELL_ERR_MISSING_ARGUMENT;
+    }
+
+    if (strspn(args, "0123456789") != strlen(args)) {
+        printf("Error: invalid argument.\n");
+        return SHELL_ERR_INVALID_ARGUMENT;
+    }
+
+    int id = atoi(args);
+    if (id <= 0) {
+        printf("Error: invalid argument.\n");
+        return SHELL_ERR_INVALID_ARGUMENT;
+    }
+
+    if (deleteStudent(head, id)) {
+        printf("Student deleted.\n");
+        return SHELL_OK;
+    } else {
+        printf("Error: student not found.\n");
+        return SHELL_ERR_STUDENT_NOT_FOUND;
+    }
+}
+
+ShellResult handle_update(char* args, Student** head) {
+    if (args == NULL || *args == '\0') {
+        printf("Error: missing argument.\n");
+        return SHELL_ERR_MISSING_ARGUMENT;
+    }
+
+    char *strId = strtok(args, " "); 
+    char *strScore = strtok(NULL, " ");
+
+    if (strId == NULL || strScore == NULL) {
+        printf("Error: missing argument.\n");
+        return SHELL_ERR_MISSING_ARGUMENT;
+    }
+
+    if (strspn(strId, "0123456789") != strlen(strId) || strspn(strScore, "0123456789") != strlen(strScore)) {
+        printf("Error: invalid argument.\n");
+        return SHELL_ERR_INVALID_ARGUMENT;
+    }
+
+    int id = atoi(strId);
+    int score = atoi(strScore);
+    
+    if (id <= 0 || score < 0 || score > 100) {
+        printf("Error: invalid argument.\n");
+        return SHELL_ERR_INVALID_ARGUMENT;
+    }
+    
+    if (updateStudent(*head, id, score)) {
+        printf("Student updated.\n");
+        return SHELL_OK;
+    } else {
+        printf("Error: student not found.\n");
+        return SHELL_ERR_STUDENT_NOT_FOUND;
+    }
 }
 
 ShellResult handle_find(char* args, Student** head) {
     if (args == NULL || *args == '\0') {
         printf("Error: missing argument.\n");
         return SHELL_ERR_MISSING_ARGUMENT;
+    }
+
+    if (strspn(args, "0123456789") != strlen(args)) {
+        printf("Error: invalid argument.\n");
+        return SHELL_ERR_INVALID_ARGUMENT;
     }
 
     int target = atoi(args);
@@ -48,13 +143,30 @@ ShellResult handle_find(char* args, Student** head) {
     return SHELL_ERR_STUDENT_NOT_FOUND;
 }
 
+ShellResult handle_list(char* args, Student** head) {
+    (void)args; 
+    if (*head == NULL) {
+        printf("No students found.\n");
+        return SHELL_OK;
+    }
+
+    printf("ID   Name      Score\n");
+    Student *current = *head;
+    while (current != NULL) {
+        printf("%-5d%-10s%d\n", current->id, current->name, current->score);
+        current = current->next;
+    }
+    return SHELL_OK;
+}
+
+
 #ifdef ADMIN_MODE
 Command commands[] = {
     {"save",    NULL, "save",                  "Save students to CSV"},
     {"reload",  NULL, "reload",                "Reload students from CSV"},
-    {"add",     NULL, "add <id> <name> <score>","Add a student"},
-    {"delete",  NULL, "delete <id>",           "Delete a student"},
-    {"update",  NULL, "update <id> <score>",   "Update student score"},
+    {"add",     handle_add, "add <id> <name> <score>","Add a student"},
+    {"delete",  handle_delete, "delete <id>",           "Delete a student"},
+    {"update",  handle_update, "update <id> <score>",   "Update student score"},
     {"find",    handle_find, "find <id>",       "Find student"},
     {"list",    handle_list, "list",           "List students"},
     {"stats",   NULL, "stats",                 "Show statistics"},

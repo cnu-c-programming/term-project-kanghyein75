@@ -51,24 +51,30 @@ void run_shell(Student **head, const char *csv_path) {
 
         char *cmd = strtok(line, " ");
         if (cmd == NULL) continue;
-        
-        if (strcmp(cmd, "exit") == 0) {
-            printf("Goodbye.\n");
-            break;
-        }
-
+    
         char *args = strtok(NULL, "");
         if (args != NULL) {
             while (*args == ' ') args++;
         }
 
         int found = 0;
+        int goodbye = 0; 
+
         for (int i = 0; i < num; i++) {
             if (strcmp(cmd, commands[i].name) == 0) {
-                commands[i].handler(args, head);
+                ShellResult result = commands[i].handler(args, head);
+                
+                if (result == SHELL_EXIT) {
+                    goodbye = 1; 
+                }
+                
                 found = 1;
                 break;
             }
+        }
+
+        if (goodbye) {
+            break; 
         }
 
         if (!found) {
@@ -110,6 +116,15 @@ int main(int argc, char *argv[]) {
         } else {
             csv_path = argv[i];
         }
+    }
+
+    if (csv_path == NULL) {
+#ifdef ADMIN_MODE
+        printf("Usage: ./admin_shell <csv_file> [-f command_file]\n");
+#elif defined(CLIENT_MODE)
+        printf("Usage: ./client_shell <csv_file> [-f command_file]\n");
+#endif
+        return 0; 
     }
 
     Student *head = NULL;

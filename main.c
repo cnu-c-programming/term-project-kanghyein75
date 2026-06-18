@@ -59,10 +59,11 @@ void run_shell(Student **head, const char *csv_path) {
 
         int found = 0;
         int goodbye = 0; 
+        ShellResult result = SHELL_OK;
 
         for (int i = 0; i < num; i++) {
             if (strcmp(cmd, commands[i].name) == 0) {
-                ShellResult result = commands[i].handler(args, head);
+                result = commands[i].handler(args, head);
                 
                 if (result == SHELL_EXIT) {
                     goodbye = 1; 
@@ -83,6 +84,8 @@ void run_shell(Student **head, const char *csv_path) {
 #else
             printf("Unknown command.\n");
 #endif
+        } else if (result != SHELL_OK && result != SHELL_EXIT) {
+            printf("\n");
         }
     }
 }
@@ -156,10 +159,10 @@ void run_command_file(const char *cmd_file, Student **head, const char *csv_path
 #else
             printf("Unknown command.\n");
 #endif
-            printf("Skipped line %d.\n", lineNum); 
-        } else if (result != SHELL_OK) {
-            printf("Skipped line %d.\n", lineNum); 
-        }
+             
+        } else if (result != SHELL_OK && result != SHELL_EXIT) {
+            printf(" Skipped line %d.\n", lineNum); 
+        } 
     }
 
     fclose(fp);

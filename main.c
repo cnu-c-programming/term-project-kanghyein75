@@ -93,14 +93,83 @@ void run_shell(Student **head, const char *csv_path) {
  *   - Execute each line as a command (same logic as run_shell).
  *   - Close the file when done.
  * --------------------------------------------------------------- */
-void run_command_file(const char *cmd_file, const char *csv_path) {
+void run_command_file(const char *cmd_file, Student **head, const char *csv_path) {
     /* TODO */
-    (void)cmd_file;
     (void)csv_path;
+
+    FILE *fp = fopen(cmd_file, "r");
+    if (fp == NULL) {
+        printf("Error: Cannot open command file.\n");
+        return; 
+    }
+
+    char line[500];
+    char rawLine[500]; 
+    int lineNum = 0;
+    
+
+    while (fgets(line, sizeof(line), fp) != NULL) {
+        lineNum++;
+
+        line[strcspn(line, "\n")] = '\0';
+
+        if (line[0] == '\0' || line[0] == '#') {
+            continue;
+        }
+
+        strcpy(rawLine, line);
+
+        printf("[command file:%d] %s\n", lineNum, rawLine);
+
+        char *cmd = strtok(line, " ");
+        if (cmd == NULL) continue;
+        
+        char *args = strtok(NULL, "");
+        if (args != NULL) {
+            while (*args == ' ') args++;
+        }
+
+        int found = 0;
+        int goodbye = 0; 
+        ShellResult result = SHELL_OK;
+
+        for (int i = 0; i < num; i++) {
+            if (strcmp(cmd, commands[i].name) == 0) {
+                result = commands[i].handler(args, head);
+                
+                if (result == SHELL_EXIT) {
+                    goodbye = 1; 
+                }
+                
+                found = 1;
+                break;
+            }
+        }
+
+        if (goodbye) {
+            break; 
+        }
+
+        if (!found) {
+#ifdef CLIENT_MODE
+            printf("Unknown command or permission denied.\n");
+#else
+            printf("Unknown command.\n");
+#endif
+            printf("Skipped line %d.\n", lineNum); 
+        } else if (result != SHELL_OK) {
+            printf("Skipped line %d.\n", lineNum); 
+        }
+    }
+
+    fclose(fp);
+    return;
 }
 
+char global_csv_path[500] = "students.csv";
+
 int main(int argc, char *argv[]) {
-    const char *csv_path  = "students.csv"; /* default CSV file */
+    const char *csv_path  = NULL; /* default CSV file */
     const char *cmd_file  = NULL;           /* -f <file> argument */
 
     /* TODO: Parse command-line arguments.
@@ -127,6 +196,8 @@ int main(int argc, char *argv[]) {
         return 0; 
     }
 
+    strncpy(global_csv_path, csv_path, sizeof(global_csv_path) - 1);
+
     Student *head = NULL;
     loadStudents(&head, csv_path);
 
@@ -147,7 +218,7 @@ int main(int argc, char *argv[]) {
 #ifdef ADMIN_MODE
     /* Admin shell: supports add, delete, update, save, load, sort, list, find, help, exit */
     if (cmd_file) {
-        run_command_file(cmd_file, csv_path);
+        run_command_file(cmd_file, &head, csv_path);
     } else {
         run_shell(&head, csv_path);
     }
@@ -155,7 +226,7 @@ int main(int argc, char *argv[]) {
 #elif defined(CLIENT_MODE)
     /* Client shell: supports find, list, help, exit  (read-only) */
     if (cmd_file) {
-        run_command_file(cmd_file, csv_path);
+        run_command_file(cmd_file, &head, csv_path);
     } else {
         run_shell(&head, csv_path);
     }

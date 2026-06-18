@@ -195,6 +195,63 @@ ShellResult handle_list(char* args, Student** head) {
     return SHELL_OK;
 }
 
+ShellResult handle_stats(char* args, Student** head) {
+    (void)args;
+
+    if (*head == NULL) {
+        printf("No student data available.\n");
+        return SHELL_OK;
+    }
+
+    int count = 0;
+    int sum = 0;
+    int max = -1;
+    int min = 101;
+
+    Student *current = *head;
+    while (current != NULL) {
+        count++;
+        sum += current->score;
+        
+        if (current->score > max) max = current->score;
+        if (current->score < min) min = current->score;
+        
+        current = current->next;
+    }
+
+    double average = (double)sum / count;
+
+    printf("Count: %d\n", count);
+    printf("Average: %.1f\n", average);
+    printf("Max: %d\n", max);
+    printf("Min: %d\n", min);
+
+    return SHELL_OK;
+}
+
+ShellResult handle_help(char* args, Student** head) {
+    (void)args;
+    (void)head;
+
+    printf("Commands:\n");
+    for (int i = 0; i < num; i++) {
+        printf("%-24s%s\n", commands[i].usage, commands[i].description);
+    }
+
+    return SHELL_OK;
+}
+
+ShellResult handle_clear(char* args, Student** head) {
+    (void)args;
+    (void)head;
+
+    printf("\033[2J\033[H");
+    
+    fflush(stdout); 
+
+    return SHELL_OK;
+}
+
 ShellResult handle_exit(char* args, Student** head) {
     (void)args; 
     (void)head; 

@@ -44,7 +44,7 @@ ShellResult handle_reload(char* args, Student** head) {
 
 ShellResult handle_add(char* args, Student** head) {
     if (args == NULL || *args == '\0') {
-        printf("Error: missing argument.\n");
+        printf("Error: missing argument.");
         return SHELL_ERR_MISSING_ARGUMENT;
     }
 
@@ -53,12 +53,12 @@ ShellResult handle_add(char* args, Student** head) {
     char *strScore = strtok(NULL, " ");
 
     if (strId == NULL || name == NULL || strScore == NULL) {
-        printf("Error: missing argument.\n");
+        printf("Error: missing argument.");
         return SHELL_ERR_MISSING_ARGUMENT;
     }
 
     if (strspn(strId, "0123456789") != strlen(strId) || strspn(strScore, "0123456789") != strlen(strScore)) {
-        printf("Error: invalid argument.\n");
+        printf("Error: invalid argument.");
         return SHELL_ERR_INVALID_ARGUMENT;
     }
 
@@ -66,14 +66,14 @@ ShellResult handle_add(char* args, Student** head) {
     int score = atoi(strScore);
 
     if (id <= 0 || score < 0 || score > 100) {
-        printf("Error: invalid argument.\n");
+        printf("Error: invalid argument.");
         return SHELL_ERR_INVALID_ARGUMENT;
     }
 
     Student *current = *head;
     while (current != NULL) {
         if (current->id == id) {
-            printf("Error: duplicate ID.\n"); 
+            printf("Error: duplicate ID."); 
             return SHELL_ERR_DUPLICATE_STUDENT;
         }
         current = current->next;
@@ -88,18 +88,18 @@ ShellResult handle_add(char* args, Student** head) {
 
 ShellResult handle_delete(char* args, Student** head) {
     if (args == NULL || *args == '\0') {
-        printf("Error: missing argument.\n");
+        printf("Error: missing argument.");
         return SHELL_ERR_MISSING_ARGUMENT;
     }
 
     if (strspn(args, "0123456789") != strlen(args)) {
-        printf("Error: invalid argument.\n");
+        printf("Error: invalid argument.");
         return SHELL_ERR_INVALID_ARGUMENT;
     }
 
     int id = atoi(args);
     if (id <= 0) {
-        printf("Error: invalid argument.\n");
+        printf("Error: invalid argument.");
         return SHELL_ERR_INVALID_ARGUMENT;
     }
 
@@ -107,14 +107,14 @@ ShellResult handle_delete(char* args, Student** head) {
         printf("Student deleted.\n");
         return SHELL_OK;
     } else {
-        printf("Error: student not found.\n");
+        printf("Error: student not found.");
         return SHELL_ERR_STUDENT_NOT_FOUND;
     }
 }
 
 ShellResult handle_update(char* args, Student** head) {
     if (args == NULL || *args == '\0') {
-        printf("Error: missing argument.\n");
+        printf("Error: missing argument.");
         return SHELL_ERR_MISSING_ARGUMENT;
     }
 
@@ -122,12 +122,12 @@ ShellResult handle_update(char* args, Student** head) {
     char *strScore = strtok(NULL, " ");
 
     if (strId == NULL || strScore == NULL) {
-        printf("Error: missing argument.\n");
+        printf("Error: missing argument.");
         return SHELL_ERR_MISSING_ARGUMENT;
     }
 
     if (strspn(strId, "0123456789") != strlen(strId) || strspn(strScore, "0123456789") != strlen(strScore)) {
-        printf("Error: invalid argument.\n");
+        printf("Error: invalid argument.");
         return SHELL_ERR_INVALID_ARGUMENT;
     }
 
@@ -135,7 +135,7 @@ ShellResult handle_update(char* args, Student** head) {
     int score = atoi(strScore);
     
     if (id <= 0 || score < 0 || score > 100) {
-        printf("Error: invalid argument.\n");
+        printf("Error: invalid argument.");
         return SHELL_ERR_INVALID_ARGUMENT;
     }
     
@@ -143,25 +143,25 @@ ShellResult handle_update(char* args, Student** head) {
         printf("Student updated.\n");
         return SHELL_OK;
     } else {
-        printf("Error: student not found.\n");
+        printf("Error: student not found.");
         return SHELL_ERR_STUDENT_NOT_FOUND;
     }
 }
 
 ShellResult handle_find(char* args, Student** head) {
     if (args == NULL || *args == '\0') {
-        printf("Error: missing argument.\n");
+        printf("Error: missing argument.");
         return SHELL_ERR_MISSING_ARGUMENT;
     }
 
     if (strspn(args, "0123456789") != strlen(args)) {
-        printf("Error: invalid argument.\n");
+        printf("Error: invalid argument.");
         return SHELL_ERR_INVALID_ARGUMENT;
     }
 
     int target = atoi(args);
     if (target <= 0) { 
-        printf("Error: invalid argument.\n");
+        printf("Error: invalid argument.");
         return SHELL_ERR_INVALID_ARGUMENT;
     }
     
@@ -177,7 +177,7 @@ ShellResult handle_find(char* args, Student** head) {
         current = current->next;
     }
 
-    printf("Error: student not found.\n");
+    printf("Error: student not found.");
     return SHELL_ERR_STUDENT_NOT_FOUND;
 }
 

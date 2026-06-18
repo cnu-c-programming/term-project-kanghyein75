@@ -114,7 +114,7 @@ void run_command_file(const char *cmd_file, Student **head, const char *csv_path
     while (fgets(line, sizeof(line), fp) != NULL) {
         lineNum++;
 
-        line[strcspn(line, "\n")] = '\0';
+        line[strcspn(line, "\r\n")] = '\0';
 
         if (line[0] == '\0' || line[0] == '#') {
             continue;
@@ -155,9 +155,9 @@ void run_command_file(const char *cmd_file, Student **head, const char *csv_path
 
         if (!found) {
 #ifdef CLIENT_MODE
-            printf("Unknown command or permission denied.\n");
+            printf("Unknown command or permission denied. Skipped line %d.\n", lineNum);
 #else
-            printf("Unknown command.\n");
+            printf("Unknown command. Skipped line %d.\n", lineNum);
 #endif
              
         } else if (result != SHELL_OK && result != SHELL_EXIT) {

@@ -5,10 +5,12 @@
 #include "student.h"
 #include "file_io.h"
 
+extern char global_csv_path[];
+
 ShellResult handle_save(char* args, Student** head) {
     (void)args;
 
-    saveStudents(*head, "students.csv");
+    saveStudents(*head, global_csv_path);
 
     int count = 0;
     Student *current = *head;
@@ -17,7 +19,7 @@ ShellResult handle_save(char* args, Student** head) {
         current = current->next;
     }
 
-    printf("Saved %d students to students.csv.\n", count);
+    printf("Saved %d students to %s.\n", count, global_csv_path);
 
     return SHELL_OK;
 }
@@ -26,7 +28,7 @@ ShellResult handle_reload(char* args, Student** head) {
     (void)args;
 
     freeStudents(head); 
-    loadStudents(head, "student.csv");
+    loadStudents(head, global_csv_path);
 
     int count = 0;
     Student *current = *head;
@@ -35,7 +37,7 @@ ShellResult handle_reload(char* args, Student** head) {
         current = current->next;
     }
 
-    printf("Reloaded %d students from students.csv.\n", count);
+    printf("Reloaded %d students from %s.\n", count, global_csv_path);
 
     return SHELL_OK;
 }

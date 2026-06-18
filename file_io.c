@@ -12,7 +12,13 @@ void loadStudents(Student **head, const char *filename) {
     char line[500];
     
     if (fgets(line, sizeof(line), fp) != NULL) {
+        line[strcspn(line, "\r\n")] = '\0';
         
+        if (strcmp(line, "id,name,score") != 0 && strcmp(line, "id, name, score") != 0) {
+            printf("Error: invalid CSV header.\n"); 
+            fclose(fp);
+            return; 
+        }
     }
 
     while (fgets(line, sizeof(line), fp) != NULL) {
